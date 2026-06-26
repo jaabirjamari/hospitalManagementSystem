@@ -16,11 +16,11 @@ public class Patient {
     private LocalDate dob;
     private String gender;
     private String address;
-    private int phoneNumber;
+    private String phoneNumber;
 
     // constructors
     public Patient(){}
-    public Patient(String name, LocalDate dob, String gender, String address, int phoneNumber){
+    public Patient(String name, LocalDate dob, String gender, String address, String phoneNumber){
         this.name = name;
         this.dob = dob; 
         this.gender = gender;
@@ -34,7 +34,7 @@ public class Patient {
     public LocalDate getDob(){ return dob;  }
     public String getGender(){ return gender; }
     public String getAddress(){ return address; }
-    public int getPhoneNumber(){ return phoneNumber; }
+    public String getPhoneNumber(){ return phoneNumber; }
 
 
     // setters
@@ -43,7 +43,7 @@ public class Patient {
     public void setDob(LocalDate dob){ this.dob = dob; }
     public void setGender(String gender){ this.gender = gender; }
     public void setAddress(String address){ this.address = address; }
-    public void setPhoneNumber(int phoneNumber){ this.phoneNumber = phoneNumber; }
+    public void setPhoneNumber(String phoneNumber){ this.phoneNumber = phoneNumber; }
 
 
 }
