@@ -1,64 +1,45 @@
 package com.example.hospitalSystem.controller;
 
 import com.example.hospitalSystem.model.Patient;
-import com.example.hospitalSystem.repository.PatientRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.example.hospitalSystem.service.PatientService;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-
-@RestController // means this clsas hands incoming web request. automaticallt convert whatever java obj into json
-@RequestMapping("/api/patients") //url 
+@RestController
+@RequestMapping("/api/patients")
 public class PatientController {
 
-    // autowire: since paitentReposistory is a interface inject it, turn it into a obj 
-    @Autowired
-    private PatientRepository pRepository;
+    private final PatientService patientService;
 
-    // GET /api/patients/{id} -> fetch one patient by their id
-    // @PathVariable grabs the id value from the URL itself
+    public PatientController(PatientService patientService) {
+        this.patientService = patientService;
+    }
+
     @GetMapping("/{id}")
-    public Patient getPaitentById(@PathVariable Long id){
-        return pRepository.findById(id).orElse(null);
+    public ResponseEntity<Patient> getPatientById(@PathVariable Long id) {
+        return patientService.getPatientById(id)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
     }
 
-    // POST /api/patients/ -> adds patient
     @PostMapping
-    public Patient addPatient(@RequestBody Patient patient){
-        Patient savedPatient = pRepository.save(patient);
-        return savedPatient;
+    public Patient addPatient(@RequestBody Patient patient) {
+        return patientService.addPatient(patient);
     }
 
-
-    // PUT = UPDATE /api/patient/{id} -> updates patient info
     @PutMapping("/{id}")
-    public Patient updatePatient(@PathVariable Long id, @RequestBody Patient updatePatient){
-        Patient existing_Patients = pRepository.findById(id).orElse(null);
-
-            if (existing_Patients != null){
-                existing_Patients.setName(updatePatient.getName());
-                existing_Patients.setDob(updatePatient.getDob());
-                existing_Patients.setGender(updatePatient.getGender());
-                existing_Patients.setAddress(updatePatient.getAddress());
-                existing_Patients.setPhoneNumber(updatePatient.getPhoneNumber());
-
-                return pRepository.save(existing_Patients);
-                
-            }
-        return null;
+    public ResponseEntity<Patient> updatePatient(@PathVariable Long id, @RequestBody Patient patient) {
+        return patientService.updatePatient(id, patient)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
     }
 
-    // deleting 
     @DeleteMapping("/{id}")
-    public String deletePatient(@PathVariable Long id){
-        Patient existingPatient = pRepository.findById(id).orElse(null);
-        
-        if(existingPatient != null){
-            pRepository.deleteById(id);
-            return "Patient deleted successfully";
+    public ResponseEntity<String> deletePatient(@PathVariable Long id) {
+        if (patientService.deletePatient(id)) {
+            return ResponseEntity.ok("Patient deleted successfully");
         }
-
-        return "Patient not Found"; 
-
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Patient not found");
     }
-
 }
